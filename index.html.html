@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activer la vérification en deux étapes — Finvens</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#E84421;--dark:#2D3540;--border:#e5e7ea;--muted:#5a6472}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f6f7;color:#2D3540}
+
+.header{background:#2D3540;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo-text{font-size:24px;font-weight:700;color:#fff;letter-spacing:.5px}
+.logo-text span{color:#E84421}
+.logo-tag{font-size:10px;color:#a0aab4;margin-left:12px}
+.header-right{font-size:11px;color:#a0aab4}
+
+.hero{background:#E84421;padding:18px 28px}
+.hero h1{font-size:18px;font-weight:600;color:#fff;margin-bottom:3px}
+.hero p{font-size:12px;color:rgba(255,255,255,.85)}
+
+.layout{display:flex;max-width:980px;margin:0 auto;padding:24px 16px 60px;gap:20px;align-items:flex-start}
+
+/* SIDEBAR */
+.sidebar{width:200px;flex-shrink:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 0;position:sticky;top:16px}
+.sb-title{font-size:10px;font-weight:600;color:#8a929a;text-transform:uppercase;letter-spacing:.07em;padding:0 14px;margin-bottom:8px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;font-size:13px;color:var(--muted);border-left:2px solid transparent;transition:all .15s;user-select:none}
+.sb-item:hover{background:#f7f7f8;color:#2D3540}
+.sb-item.active{background:#fdf4f2;color:#E84421;font-weight:500;border-left-color:#E84421}
+.sb-item.done{color:#3d9a6a}
+.sb-item.done .snum{background:#3d9a6a;border-color:#3d9a6a;color:#fff}
+.snum{width:24px;height:24px;border-radius:50%;border:2px solid #c8cdd3;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;color:#8a929a;transition:all .15s}
+.sb-item.active .snum{border-color:#E84421;color:#E84421}
+.sb-sep{height:1px;background:#eef0f2;margin:10px 14px}
+.sb-help{font-size:11px;color:#8a929a;padding:0 14px;line-height:1.5}
+.sb-help a{color:#E84421;text-decoration:none}
+
+/* MAIN */
+.main{flex:1;min-width:0}
+.step-panel{display:none}
+.step-panel.active{display:block}
+
+.why-box{background:#fff;border:1px solid var(--border);border-left:3px solid #E84421;border-radius:6px;padding:13px 16px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start}
+.why-title{font-size:13px;font-weight:600;color:#2D3540;margin-bottom:3px}
+.why-text{font-size:12px;color:var(--muted);line-height:1.5}
+
+.card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px 22px}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.cnum{width:32px;height:32px;border-radius:50%;background:#E84421;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ctitle{font-size:15px;font-weight:600;color:#2D3540}
+.cdesc{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+
+/* NAV BUTTONS */
+.nav-btns{display:flex;justify-content:space-between;margin-top:20px;gap:10px}
+.btn-prev{background:#fff;color:#2D3540;border:1px solid var(--border);border-radius:4px;padding:8px 18px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-prev:hover{background:#f5f6f7}
+.btn-next{background:#E84421;color:#fff;border:none;border-radius:4px;padding:8px 20px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-next:hover{background:#c93819}
+.btn-next:disabled{background:#c8cdd3;cursor:default}
+
+/* SCREEN MOCKUPS */
+.screen{background:#fff;border:1px solid #dde1e6;border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:10px}
+.screen-bar{background:#f3f2f1;border-bottom:1px solid #edebe9;padding:6px 10px;display:flex;align-items:center;gap:7px}
+.scdots{display:flex;gap:4px}
+.scd{width:8px;height:8px;border-radius:50%;background:#c8c6c4}
+.scurl{font-size:10px;color:#a19f9d;background:#fff;border:1px solid #edebe9;border-radius:3px;padding:2px 8px;flex:1}
+
+.ms-wrap{display:flex;min-height:240px}
+.ms-nav{width:170px;flex-shrink:0;border-right:1px solid #edebe9;padding:12px 0;background:#faf9f8}
+.ms-nav-lbl{font-size:9px;font-weight:600;color:#a19f9d;text-transform:uppercase;letter-spacing:.06em;padding:0 12px;margin:10px 0 5px}
+.ms-ni{display:flex;align-items:center;gap:7px;padding:6px 12px;font-size:11px;color:#323130;cursor:pointer}
+.ms-ni:hover{background:#f3f2f1}
+.ms-ni.active{background:#fdf4f2;color:#E84421;font-weight:500;border-right:2px solid #E84421}
+.ms-niico{width:13px;height:13px;flex-shrink:0;opacity:.55}
+.ms-ni.active .ms-niico{opacity:1}
+.ms-user{display:flex;align-items:center;gap:8px;padding:0 12px 10px;border-bottom:1px solid #edebe9;margin-bottom:6px}
+.ms-av{width:30px;height:30px;border-radius:50%;background:#2D3540;color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ms-uname{font-size:11px;font-weight:600;color:#323130}
+.ms-uemail{font-size:10px;color:#605e5c}
+.ms-body{flex:1;padding:14px 16px}
+.ms-h{font-size:13px;font-weight:600;color:#323130;margin-bottom:10px}
+.ms-sub{font-size:11px;color:#605e5c;margin-bottom:12px}
+.ms-addbtn{background:#E84421;color:#fff;border:none;border-radius:2px;padding:5px 11px;font-size:11px;font-weight:500;cursor:pointer;float:right}
+.clearfix::after{content:'';display:table;clear:both}
+.ms-empty{border:1px dashed #c8c6c4;border-radius:4px;padding:12px;text-align:center;color:#a19f9d;font-size:11px;margin-top:8px}
+
+.method-card{border:1px solid #edebe9;border-radius:4px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.method-card.sel{border:2px solid #E84421;background:#fdf4f2}
+.mico{width:30px;height:30px;border-radius:50%;background:#fde8e2;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mname{font-size:12px;font-weight:600;color:#323130}
+.mdesc{font-size:11px;color:#605e5c}
+.badge-only{font-size:10px;background:#fde8e2;color:#7a1e0a;border-radius:3px;padding:2px 7px;font-weight:500;flex-shrink:0}
+.radio{width:15px;height:15px;border:2px solid #E84421;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rdot{width:7px;height:7px;border-radius:50%;background:#E84421}
+.ms-nextbtn{display:block;width:100%;padding:7px;background:#E84421;color:#fff;border:none;border-radius:2px;font-size:12px;font-weight:500;cursor:pointer;text-align:center;margin-top:10px}
+
+.info-box{background:#fdf4f2;border-left:3px solid #E84421;border-radius:0 4px 4px 0;padding:7px 11px;margin-bottom:10px;font-size:11px;color:#7a1e0a;line-height:1.5}
+
+.qr-wrap{text-align:center;padding:6px 0 4px}
+.qr-frame{display:inline-block;border:2px solid #edebe9;border-radius:4px;padding:7px;background:#fff;margin-bottom:4px}
+.qr-grid{display:grid;grid-template-columns:repeat(9,7px);gap:1.5px}
+.qc{width:7px;height:7px;background:#323130;border-radius:1px}
+.qe{width:7px;height:7px}
+.qr-cap{font-size:10px;color:#a19f9d}
+
+.split{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.num-screen{flex:1;min-width:180px}
+.num-display{text-align:center;padding:18px 14px}
+.num-lbl{font-size:11px;color:#605e5c;margin-bottom:8px}
+.num-big{font-size:42px;font-weight:700;color:#E84421;letter-spacing:6px}
+.num-wait{font-size:10px;color:#a19f9d;margin-top:8px}
+.notif-phone{width:170px;background:#1c1c1e;border-radius:24px;padding:8px;flex-shrink:0}
+.notif-screen{background:#f2f2f7;border-radius:17px;padding:9px}
+.nbar{display:flex;justify-content:space-between;font-size:9px;color:#3c3c43;margin-bottom:5px;opacity:.7}
+.ncard{background:#fff;border-radius:9px;padding:8px 9px}
+.nhdr{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.naico{width:15px;height:15px;border-radius:4px;background:#E84421;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.naname{font-size:9px;font-weight:600;color:#3c3c43;text-transform:uppercase;letter-spacing:.03em}
+.ntitle{font-size:11px;font-weight:600;color:#000;margin-bottom:2px}
+.nbody{font-size:10px;color:#3c3c43;line-height:1.3;margin-bottom:5px}
+.nnum{font-size:22px;font-weight:700;color:#E84421;text-align:center;margin:3px 0 5px;border:2px solid #edebe9;border-radius:4px;padding:2px}
+.nactions{display:flex;gap:4px}
+.napprove{flex:1;background:#E84421;color:#fff;border:none;border-radius:4px;padding:5px;font-size:10px;font-weight:500;text-align:center}
+.ndeny{flex:1;background:#f2f2f7;color:#ff3b30;border:none;border-radius:4px;padding:5px;font-size:10px;font-weight:500;text-align:center}
+
+.tip{background:#fffbf0;border:1px solid #ffdd9a;border-radius:4px;padding:8px 12px;font-size:12px;color:#7d5a00;margin-top:10px;display:flex;gap:7px;line-height:1.5}
+
+.done-banner{background:#edf7f2;border:1px solid #9fd89f;border-radius:6px;padding:16px;text-align:center;margin-bottom:12px}
+.done-check{font-size:28px;margin-bottom:5px}
+.done-title{font-size:14px;font-weight:600;color:#107c10;margin-bottom:3px}
+.done-sub{font-size:12px;color:#27500a}
+.done-method{border:1px solid var(--border);border-radius:4px;padding:10px 13px;background:#fff;display:flex;align-items:center;gap:10px;font-size:12px;color:#323130;margin-bottom:10px}
+
+.app-dl{display:flex;gap:10px;margin-top:10px}
+.app-btn{flex:1;border:1px solid #c8cdd3;border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px;background:#fff}
+.app-btn-small{font-size:10px;color:var(--muted)}
+.app-btn-big{font-size:12px;font-weight:500;color:#2D3540}
+
+.footer{background:#2D3540;padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{font-size:17px;font-weight:700;color:#fff}
+.footer-logo span{color:#E84421}
+.footer-r{font-size:11px;color:#6b7785;text-align:right}
+.footer-r a{color:#E84421;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;align-items:center">
+    <div class="logo-text">FIN<span>V</span>ENS</div>
+    <div class="logo-tag">Facilitateurs de financement</div>
+  </div>
+  <div class="header-right">finvens.fr — Guide sécurité</div>
+</div>
+
+<div class="hero">
+  <h1>Activer la vérification en deux étapes sur votre compte</h1>
+  <p>Sécurisez votre accès Microsoft 365 @finvens.fr avec Microsoft Authenticator — environ 5 minutes.</p>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sb-title">Étapes</div>
+    <div class="sb-item" data-step="1"><div class="snum">1</div>Installer l'app</div>
+    <div class="sb-item" data-step="2"><div class="snum">2</div>Se connecter</div>
+    <div class="sb-item" data-step="3"><div class="snum">3</div>Infos de sécurité</div>
+    <div class="sb-item" data-step="4"><div class="snum">4</div>Ajouter méthode</div>
+    <div class="sb-item" data-step="5"><div class="snum">5</div>Scanner QR code</div>
+    <div class="sb-item" data-step="6"><div class="snum">6</div>Valider notification</div>
+    <div class="sb-item" data-step="7"><div class="snum">7</div>Terminé !</div>
+    <div class="sb-sep"></div>
+    <div class="sb-help">Besoin d'aide ?<br><a href="mailto:support@finvens.fr">support@finvens.fr</a></div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="why-box">
+      <div style="font-size:20px;flex-shrink:0">🔐</div>
+      <div>
+        <div class="why-title">Pourquoi activer cette protection ?</div>
+        <div class="why-text">Même si votre mot de passe est compromis, un pirate ne pourra pas accéder à votre compte sans avoir aussi votre téléphone. C'est la protection la plus efficace contre le vol de compte.</div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 1 -->
+    <div class="step-panel" id="step-1">
+      <div class="card">
+        <div class="card-header"><div class="cnum">1</div><div class="ctitle">Installer Microsoft Authenticator sur votre téléphone</div></div>
+        <div class="cdesc">Téléchargez gratuitement l'application sur votre smartphone. Si vous l'avez déjà, passez directement à l'étape suivante.</div>
+        <div class="app-dl">
+          <div class="app-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3.18 23.76c.3.17.64.24.99.21l12.82-11.76L13.36 8.6 3.18 23.76z" fill="#EA4335"/><path d="M20.64 10.35l-2.97-1.72-3.31 3.09 3.31 3.09 2.99-1.73a1.66 1.66 0 000-2.73z" fill="#FBBC04"/><path d="M3.17.24A1.66 1.66 0 001.5 1.97v20.06c0 .62.33 1.17.84 1.47l.84.49 12.18-11.17v-.3L3.17.24z" fill="#4285F4"/><path d="M4.17 23.97l.01-.01 12.82-11.75-3.64-3.61L4.17 23.97z" fill="#34A853"/></svg>
+            <div><div class="app-btn-small">Disponible sur</div><div class="app-btn-big">Google Play</div></div>
+          </div>
+          <div class="app-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M16 11.5c0-2.5 1.3-4.7 3.3-6C18 3.7 15.6 2.5 13 2.5c-2.2 0-4 1.3-5 1.3s-2.8-1.3-4.7-1.3C.8 2.5-1.3 5.2-1.3 8.5c0 4.5 3.7 10 6.5 10 1.2 0 2.5-1.2 4.3-1.2 1.7 0 2.8 1.2 4.5 1.2 2.8 0 5.2-5 6-7.8-1.7-.7-4-2.7-4-9.2z" fill="#555"/></svg>
+            <div><div class="app-btn-small">Télécharger sur</div><div class="app-btn-big">App Store</div></div>
+          </div>
+        </div>
+        <div class="nav-btns"><div></div><button class="btn-next" onclick="goTo(2)">Étape suivante →</button></div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 -->
+    <div class="step-panel" id="step-2">
+      <div class="card">
+        <div class="card-header"><div class="cnum">2</div><div class="ctitle">Se connecter à votre compte Finvens</div></div>
+        <div class="cdesc"><strong>Depuis votre ordinateur</strong>, ouvrez votre navigateur et accédez à <a href="https://mysignins.microsoft.com" style="color:#E84421;font-weight:500">mysignins.microsoft.com</a>. Connectez-vous avec votre adresse <strong>@finvens.fr</strong> et votre mot de passe habituel.</div>
+        <div class="screen">
+          <div class="screen-bar"><div class="scdots"><div class="scd"></div><div class="scd"></div><div class="scd"></div></div><div class="scurl">mysignins.microsoft.com</div></div>
+          <div style="padding:20px;text-align:center">
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;width:18px;height:18px">
+                <span style="background:#f25022;display:block;border-radius:1px"></span><span style="background:#7fba00;display:block;border-radius:1px"></span>
+                <span style="background:#00a4ef;display:block;border-radius:1px"></span><span style="background:#ffb900;display:block;border-radius:1px"></span>
+              </div>
+              <span style="font-size:15px;color:#323130">Microsoft</span>
+            </div>
+            <div style="font-size:14px;font-weight:600;color:#323130;margin-bottom:4px">Se connecter</div>
+            <input style="width:100%;max-width:280px;border:1px solid #8a8886;border-radius:2px;padding:7px 10px;font-size:13px;color:#605e5c;display:block;margin:10px auto" value="prenom.nom@finvens.fr" readonly>
+            <button style="background:#E84421;color:#fff;border:none;border-radius:2px;padding:7px 24px;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px">Suivant</button>
+          </div>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-prev" onclick="goTo(1)">← Retour</button>
+          <button class="btn-next" onclick="goTo(3)">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 -->
+    <div class="step-panel" id="step-3">
+      <div class="card">
+        <div class="card-header"><div class="cnum">3</div><div class="ctitle">Cliquer sur "Informations de sécurité" dans le menu gauche</div></div>
+        <div class="cdesc">Une fois connecté, votre profil s'affiche avec un menu de navigation sur la <strong>gauche</strong>. Cliquez sur <strong>Informations de sécurité</strong>, puis sur le bouton <strong>+ Ajouter une méthode</strong>.</div>
+        <div class="screen">
+          <div class="screen-bar"><div class="scdots"><div class="scd"></div><div class="scd"></div><div class="scd"></div></div><div class="scurl">mysignins.microsoft.com</div></div>
+          <div class="ms-wrap">
+            <div class="ms-nav">
+              <div class="ms-user"><div class="ms-av">ML</div><div><div class="ms-uname">Marie Leroy</div><div class="ms-uemail">m.leroy@finvens.fr</div></div></div>
+              <div class="ms-nav-lbl">Mon compte</div>
+              <div class="ms-ni">
+                <svg class="ms-niico" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="2" stroke="#605e5c" stroke-width="1.2"/><path d="M4 8h8M4 5h8M4 11h5" stroke="#605e5c" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Vue d'ensemble
+              </div>
+              <div class="ms-ni active">
+                <svg class="ms-niico" viewBox="0 0 16 16" fill="none"><path d="M8 1a3 3 0 100 6 3 3 0 000-6zM3 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#E84421" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Informations de sécurité
+              </div>
+              <div class="ms-ni">
+                <svg class="ms-niico" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#605e5c" stroke-width="1.2"/><path d="M2 6h12" stroke="#605e5c" stroke-width="1.2"/></svg>
+                Mes appareils
+              </div>
+              <div class="ms-ni">
+                <svg class="ms-niico" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#605e5c" stroke-width="1.2"/><path d="M8 5v3.5l2 2" stroke="#605e5c" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Mes connexions
+              </div>
+            </div>
+            <div class="ms-body">
+              <div class="ms-h clearfix">Méthodes de connexion <button class="ms-addbtn">+ Ajouter une méthode</button></div>
+              <div class="ms-empty">Aucune méthode de vérification enregistrée.<br>Cliquez sur "+ Ajouter une méthode".</div>
+            </div>
+          </div>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-prev" onclick="goTo(2)">← Retour</button>
+          <button class="btn-next" onclick="goTo(4)">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 4 -->
+    <div class="step-panel" id="step-4">
+      <div class="card">
+        <div class="card-header"><div class="cnum">4</div><div class="ctitle">Sélectionner "Application d'authentification"</div></div>
+        <div class="cdesc"><strong>Application d'authentification</strong> est la seule méthode autorisée par Finvens. Sélectionnez-la et cliquez sur <strong>Ajouter</strong>.</div>
+        <div class="screen">
+          <div class="screen-bar"><div class="scdots"><div class="scd"></div><div class="scd"></div><div class="scd"></div></div><div class="scurl">mysignins.microsoft.com / security-info / add-method</div></div>
+          <div class="ms-wrap">
+            <div class="ms-nav">
+              <div class="ms-user"><div class="ms-av">ML</div><div><div class="ms-uname">Marie Leroy</div><div class="ms-uemail">m.leroy@finvens.fr</div></div></div>
+              <div class="ms-nav-lbl">Mon compte</div>
+              <div class="ms-ni active">
+                <svg class="ms-niico" viewBox="0 0 16 16" fill="none"><path d="M8 1a3 3 0 100 6 3 3 0 000-6zM3 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#E84421" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Informations de sécurité
+              </div>
+            </div>
+            <div class="ms-body">
+              <div class="ms-h">Ajouter une méthode</div>
+              <div class="ms-sub">Compte @finvens.fr</div>
+              <div class="method-card sel">
+                <div class="radio"><div class="rdot"></div></div>
+                <div class="mico"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#E84421"/><path d="M5 10l3.5 3.5L15 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div style="flex:1"><div class="mname">Application d'authentification</div><div class="mdesc">Microsoft Authenticator — push</div></div>
+                <div class="badge-only">Seule méthode</div>
+              </div>
+              <button class="ms-nextbtn">Ajouter</button>
+            </div>
+          </div>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-prev" onclick="goTo(3)">← Retour</button>
+          <button class="btn-next" onclick="goTo(5)">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 5 -->
+    <div class="step-panel" id="step-5">
+      <div class="card">
+        <div class="card-header"><div class="cnum">5</div><div class="ctitle">Scanner le QR code avec votre téléphone</div></div>
+        <div class="cdesc">Un QR code s'affiche à l'écran. Sur votre téléphone, ouvrez <strong>Microsoft Authenticator</strong> → appuyez sur <strong>+</strong> en haut à droite → <strong>Compte professionnel ou scolaire</strong> → <strong>Scanner un QR code</strong>, puis pointez vers l'écran.</div>
+        <div class="screen">
+          <div class="screen-bar"><div class="scdots"><div class="scd"></div><div class="scd"></div><div class="scd"></div></div><div class="scurl">mysignins.microsoft.com / security-info / authenticator-setup</div></div>
+          <div class="ms-wrap">
+            <div class="ms-nav">
+              <div class="ms-user"><div class="ms-av">ML</div><div><div class="ms-uname">Marie Leroy</div><div class="ms-uemail">m.leroy@finvens.fr</div></div></div>
+              <div class="ms-nav-lbl">Mon compte</div>
+              <div class="ms-ni active">
+                <svg class="ms-niico" viewBox="0 0 16 16" fill="none"><path d="M8 1a3 3 0 100 6 3 3 0 000-6zM3 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#E84421" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Informations de sécurité
+              </div>
+            </div>
+            <div class="ms-body">
+              <div class="ms-h">Configurer l'application</div>
+              <div class="ms-sub">Étape 1 sur 2 — Scanner le QR code</div>
+              <div class="info-box">Dans Microsoft Authenticator → appuyez sur <strong>+</strong> → Compte professionnel → Scanner le QR code ci-dessous.</div>
+              <div class="qr-wrap">
+                <div class="qr-frame">
+                  <div class="qr-grid">
+                    <div class="qc"></div><div class="qc"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qc"></div><div class="qc"></div>
+                    <div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qe"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div>
+                    <div class="qc"></div><div class="qc"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qc"></div><div class="qc"></div>
+                    <div class="qe"></div><div class="qe"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qe"></div><div class="qe"></div>
+                    <div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div>
+                    <div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div>
+                    <div class="qc"></div><div class="qc"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div>
+                    <div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qe"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div>
+                    <div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qc"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div><div class="qe"></div><div class="qc"></div>
+                  </div>
+                </div>
+                <div class="qr-cap">Votre QR code personnel — ne le partagez pas</div>
+              </div>
+              <button class="ms-nextbtn">Suivant — j'ai scanné le code</button>
+            </div>
+          </div>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-prev" onclick="goTo(4)">← Retour</button>
+          <button class="btn-next" onclick="goTo(6)">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 6 -->
+    <div class="step-panel" id="step-6">
+      <div class="card">
+        <div class="card-header"><div class="cnum">6</div><div class="ctitle">Approuver la notification de test</div></div>
+        <div class="cdesc">Microsoft envoie une notification sur votre téléphone. Un numéro s'affiche sur votre ordinateur — saisissez-le dans l'app Authenticator et appuyez sur <strong>Approuver</strong>.</div>
+        <div class="split">
+          <div class="num-screen">
+            <div class="screen">
+              <div class="screen-bar"><div class="scdots"><div class="scd"></div><div class="scd"></div><div class="scd"></div></div><div class="scurl">Vérification en cours...</div></div>
+              <div class="num-display">
+                <div class="num-lbl">Entrez ce numéro dans l'application Authenticator</div>
+                <div class="num-big">72</div>
+                <div class="num-wait">En attente de votre approbation...</div>
+              </div>
+            </div>
+          </div>
+          <div class="notif-phone">
+            <div class="notif-screen">
+              <div class="nbar"><span>9:41</span><span>●●●</span></div>
+              <div class="ncard">
+                <div class="nhdr">
+                  <div class="naico"><svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                  <span class="naname">Authenticator</span>
+                </div>
+                <div class="ntitle">Connexion approuvée ?</div>
+                <div class="nbody">Entrez le numéro affiché sur votre ordinateur</div>
+                <div class="nnum">72</div>
+                <div class="nactions"><div class="napprove">Approuver</div><div class="ndeny">Refuser</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tip">⚠️ Si vous recevez une notification que vous n'avez pas déclenchée, appuyez sur <strong>Refuser</strong> et contactez <a href="mailto:support@finvens.fr" style="color:#7d5a00;font-weight:600">support@finvens.fr</a>.</div>
+        <div class="nav-btns">
+          <button class="btn-prev" onclick="goTo(5)">← Retour</button>
+          <button class="btn-next" onclick="goTo(7)">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 7 -->
+    <div class="step-panel" id="step-7">
+      <div class="card">
+        <div class="card-header"><div class="cnum">7</div><div class="ctitle">C'est terminé !</div></div>
+        <div class="cdesc">Votre compte @finvens.fr est maintenant protégé par la vérification en deux étapes.</div>
+        <div class="done-banner">
+          <div class="done-check">✅</div>
+          <div class="done-title">Vérification en deux étapes activée</div>
+          <div class="done-sub">Votre compte est maintenant protégé avec Microsoft Authenticator.</div>
+        </div>
+        <div class="done-method">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#E84421"/><path d="M4 8l3 3 5-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Microsoft Authenticator — <span style="color:#605e5c;margin-left:4px">enregistré sur votre téléphone</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">À chaque connexion, vous recevrez une notification à valider sur votre téléphone. En cas de problème : <a href="mailto:support@finvens.fr" style="color:#E84421">support@finvens.fr</a></div>
+        <div class="nav-btns">
+          <button class="btn-prev" onclick="goTo(6)">← Retour</button>
+          <div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-logo">FIN<span>V</span>ENS</div>
+  <div class="footer-r"><div>Document interne — <a href="https://finvens.fr">finvens.fr</a></div><div style="margin-top:3px;color:#4a5568">Direction des Systèmes d'Information</div></div>
+</div>
+
+<script>
+const TOTAL = 7;
+let current = 1;
+
+function goTo(n) {
+  if (n < 1 || n > TOTAL) return;
+  document.getElementById('step-' + current).classList.remove('active');
+  document.querySelectorAll('.sb-item').forEach(el => {
+    el.classList.remove('active');
+    const s = parseInt(el.dataset.step);
+    if (s < n) { el.classList.add('done'); el.querySelector('.snum').textContent = '✓'; }
+    else { el.classList.remove('done'); el.querySelector('.snum').textContent = s; }
+  });
+  current = n;
+  document.getElementById('step-' + current).classList.add('active');
+  document.querySelector('[data-step="' + current + '"]').classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+document.querySelectorAll('.sb-item').forEach(el => {
+  el.addEventListener('click', () => goTo(parseInt(el.dataset.step)));
+});
+
+goTo(1);
+</script>
+</body>
+</html>
